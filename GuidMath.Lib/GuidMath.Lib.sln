@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuidMath.Lib", "GuidMath.Lib\GuidMath.Lib.csproj", "{9D3C8EB8-BCA2-43E2-BD84-FDEBB5C0AE3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuidMath.Tests", "GuidMath.Tests\GuidMath.Tests.csproj", "{327D36A4-36CD-452D-9483-BE136B3AAFDE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D3C8EB8-BCA2-43E2-BD84-FDEBB5C0AE3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D3C8EB8-BCA2-43E2-BD84-FDEBB5C0AE3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D3C8EB8-BCA2-43E2-BD84-FDEBB5C0AE3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D3C8EB8-BCA2-43E2-BD84-FDEBB5C0AE3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{327D36A4-36CD-452D-9483-BE136B3AAFDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{327D36A4-36CD-452D-9483-BE136B3AAFDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{327D36A4-36CD-452D-9483-BE136B3AAFDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{327D36A4-36CD-452D-9483-BE136B3AAFDE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {73A1521E-327E-45AC-9C90-19F31F5418DD}
+	EndGlobalSection
+EndGlobal
