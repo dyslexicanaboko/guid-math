@@ -6,15 +6,26 @@ namespace GuidMath.Tests
     [TestFixture]
     public class BaseTests
     {
-        [Test]
-        public void Increment_by_one()
-        {
-            var input = "67624A31-850B-4525-B4BF-778D20D47076";
-            var expected = new Guid("67624A31-850B-4525-B4BF-778D20D47077");
+        private const string SomeGuidString = "67624A31-850B-4525-B4BF-778D20D47076";
+        private readonly Guid SomeGuid = new Guid(SomeGuidString);
 
-            var svc = new GuidMathService(input);
-            
-            var actual = svc.Add(1);
+        [TestCase(1, "67624A31-850B-4525-B4BF-778D20D47077")]
+        [TestCase(0x8872DF2B8F8A, "67624A31-850B-4525-B4C0-000000000000")]
+        [TestCase(0, SomeGuidString)]
+        [TestCase(-1, "67624A31-850B-4525-B4BF-778D20D47075")]
+        [TestCase(-0x778D20D47077, "67624A31-850B-4525-B4BE-000000000000")]
+        public void Add_x(long number, string expectedGuid)
+        {
+            AreGuidsEqual(expectedGuid, number);
+        }
+
+        private void AreGuidsEqual(string guid, long increment)
+        {
+            var expected = new Guid(guid);
+
+            var svc = new GuidMathService(SomeGuid);
+
+            var actual = svc.Add(increment);
 
             Assert.AreEqual(expected, actual);
         }

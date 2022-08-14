@@ -12,14 +12,19 @@ namespace GuidMath.Lib
 		private Segment _d;
 		private Segment _e;
 
-		public string LongGuidString { get; private set; }
-		public Guid HexGuid { get; private set; }
+		/// <summary>Decimal (base10) representation of a Guid.</summary>
+		public string GuidDecimalString { get; private set; }
+		
+		/// <summary>Supplied Guid.</summary>
+		public Guid GuidInput { get; private set; }
 
-		public GuidMathService(string guid)
+		public GuidMathService(Guid guid)
 		{
-			_guidString = guid;
+			GuidInput = guid;
 
-			_longSegments = guid
+			_guidString = guid.ToString("D"); //Just hypens
+
+			_longSegments = _guidString
 				.Split('-')
 				.Select(x => long.Parse(x, System.Globalization.NumberStyles.HexNumber))
 				.ToArray();
@@ -37,20 +42,26 @@ namespace GuidMath.Lib
 			_d.Left = _c;
 			_e.Left = _d;
 
-			LongGuidString = FormatAsGuidString(_longSegments);
-
-			HexGuid = new Guid(_guidString);
+			GuidDecimalString = FormatAsGuidString(_longSegments);
 		}
 
 		private string FormatAsGuidString<T>(IEnumerable<T> segments) => string.Join('-', segments);
 
 		public Guid Add(long number)
 		{
-			TryAdd(_e, number);
+			//Check if it was addition or subtraction
+			if (number >= 0)
+			{
+				TryAdd(_e, number);
+			}
+			else
+			{
+				TrySubtract(_e, number);
+			}
 
 			var str = GetHexGuidString(_a, _b, _c, _d, _e);
 
-			//Console.WriteLine(str);
+			Console.WriteLine(str); //For debug when the Guid Format is wrong
 
 			return new Guid(str);
 		}
@@ -79,6 +90,28 @@ namespace GuidMath.Lib
 			segment.Value = 0; //Reset to zero
 
 			TryAdd(segment.Left, remainder);
+		}
+
+		private void TrySubtract(Segment segment, long number)
+		{
+			if (segment == null) throw new Exception("Invalid negative Guid - cannot decrement further, min reached.");
+
+			var diff = segment.Value + number;
+
+			//If this Segment is not negative (or less than zero) then then it can be decremented.
+			if (diff >= 0)
+			{
+				segment.Value = diff;
+
+				return;
+			}
+
+			//If the segment is less than zero, then it is has to be reset to zero
+			//after reducing the number by the current value and we attempt to decrement the 
+			//next segment.
+			segment.Value = 0; //Reset to zero
+
+			TrySubtract(segment.Left, diff);
 		}
 
 		private string GetHexGuidString(params Segment[] segments)
