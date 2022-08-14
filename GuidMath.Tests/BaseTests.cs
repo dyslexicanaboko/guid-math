@@ -19,6 +19,22 @@ namespace GuidMath.Tests
             AreGuidsEqual(expectedGuid, number);
         }
 
+        [Test]
+        public void Exception_when_result_is_too_large()
+        {
+            Assert.Throws<InvalidAdditionException>(() => {
+                new GuidMathService(SomeGuid).Add(0xFFFFFFFFFFFF);
+            });
+        }
+
+        [Test]
+        public void Exception_when_result_is_less_than_zero()
+        {
+            Assert.Throws<InvalidSubtractionException>(() => {
+                new GuidMathService(SomeGuid).Add(-0x8872DF2B8F8A);
+            });
+        }
+
         private void AreGuidsEqual(string guid, long increment)
         {
             var expected = new Guid(guid);

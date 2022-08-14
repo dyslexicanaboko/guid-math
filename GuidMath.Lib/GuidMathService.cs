@@ -30,11 +30,11 @@ namespace GuidMath.Lib
 				.ToArray();
 
 			//Break it down for easy access
-			_a = new Segment(_longSegments[0], C.Base10Segments.MaxA, 8);
-			_b = new Segment(_longSegments[1], C.Base10Segments.MaxB, 4);
-			_c = new Segment(_longSegments[2], C.Base10Segments.MaxC, 4);
-			_d = new Segment(_longSegments[3], C.Base10Segments.MaxD, 4);
-			_e = new Segment(_longSegments[4], C.Base10Segments.MaxE, 12);
+			_a = new Segment(_longSegments[0], C.Segments.DecimalBase10.MaxA, 8);
+			_b = new Segment(_longSegments[1], C.Segments.DecimalBase10.MaxB, 4);
+			_c = new Segment(_longSegments[2], C.Segments.DecimalBase10.MaxC, 4);
+			_d = new Segment(_longSegments[3], C.Segments.DecimalBase10.MaxD, 4);
+			_e = new Segment(_longSegments[4], C.Segments.DecimalBase10.MaxE, 12);
 
 			//Setup the relationships between the segments
 			_b.Left = _a;
@@ -61,14 +61,17 @@ namespace GuidMath.Lib
 
 			var str = GetHexGuidString(_a, _b, _c, _d, _e);
 
+			if (Guid.TryParse(str, out var guid)) return guid;
+
 			Console.WriteLine(str); //For debug when the Guid Format is wrong
 
-			return new Guid(str);
+			//This is an unexpected exception because the Guid Parse failed.
+			throw new Exception($"Guid string {str} could not be parsed. It's not a valid Guid. Math bug.");
 		}
 
 		private void TryAdd(Segment segment, long number)
 		{
-			if (segment == null) throw new Exception("Guid overflow - cannot increment further, max reached.");
+			if (segment == null) throw new InvalidAdditionException();
 
 			var sum = segment.Value + number;
 
@@ -94,7 +97,7 @@ namespace GuidMath.Lib
 
 		private void TrySubtract(Segment segment, long number)
 		{
-			if (segment == null) throw new Exception("Invalid negative Guid - cannot decrement further, min reached.");
+			if (segment == null) throw new InvalidSubtractionException();
 
 			var diff = segment.Value + number;
 
