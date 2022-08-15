@@ -1,4 +1,6 @@
-﻿namespace GuidMath.Lib
+﻿using System.Numerics;
+
+namespace GuidMath.Lib
 {
     public static class Constants
     {
@@ -34,6 +36,19 @@
                 public const int C = 4;
                 public const int D = 4;
                 public const int E = 12;
+            }
+
+            public static class Multiplier
+            {
+                //The following Doubles become unreliable:
+                //  1e30 yields 1000000000000000019884624838656
+                //  1e25 yields 10000000000000000905969664
+                //Therefore parsing explicitly
+                public static readonly BigInteger A = BigInteger.Parse("1000000000000000000000000000000"); //1e30
+                public static readonly BigInteger B = BigInteger.Parse("10000000000000000000000000"); //1e25
+                public static readonly BigInteger C = new BigInteger(1e20D);
+                public static readonly BigInteger D = new BigInteger(1e15D);
+                public static readonly BigInteger E = new BigInteger(1e0D);
             }
         }        
     }

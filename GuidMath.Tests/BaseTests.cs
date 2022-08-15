@@ -1,5 +1,6 @@
 ﻿using GuidMath.Lib;
 using NUnit.Framework;
+using System.Numerics;
 
 namespace GuidMath.Tests
 {
@@ -42,6 +43,21 @@ namespace GuidMath.Tests
             var svc = new GuidMathService(SomeGuid);
 
             var actual = svc.Add(increment);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase(Constants.GuidHexStringMin, "0")]
+        [TestCase("00000000-0000-0000-0000-000000000001", "1")]
+        [TestCase("00000000-0000-0000-0000-FFFFFFFFFFFF", "281474976710655")]
+        [TestCase(Constants.GuidHexStringMax, "4294967295655356553565535281474976710655")]
+        //[TestCase("67624A31-850B-4525-B4BF-778D20D47077", 1)]
+        //[TestCase("67624A31-850B-4525-B4BF-778D20D47077", 1)]
+        public void Guid_can_be_converted_to_number(string guid, string expectedNumber)
+        {
+            var expected = BigInteger.Parse(expectedNumber);
+            
+            var actual = GuidMathService.ConvertToNumber(new Guid(guid));
 
             Assert.AreEqual(expected, actual);
         }

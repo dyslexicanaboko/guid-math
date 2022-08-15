@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using M = GuidMath.Lib.Constants.Segments.Multiplier;
 
 namespace GuidMath.Lib
 {
@@ -13,20 +14,9 @@ namespace GuidMath.Lib
 
 		public static string FormatAsGuidString<T>(IEnumerable<T> segments) => string.Join('-', segments);
 
-		public Guid Add(Guid guid)
-		{
-			return Add(1);
-		}
+		public Guid Add(Guid guid) => Add(ConvertToNumber(guid));
 
-		public Guid Subtract(Guid guid)
-		{
-			return Add(-1);
-		}
-
-		private BigInteger ConvertToNumber(Guid guid)
-		{
-			return 1;
-		}
+		public Guid Subtract(Guid guid) => Add(-ConvertToNumber(guid));
 
 		public Guid Add(BigInteger number)
 		{
@@ -96,6 +86,20 @@ namespace GuidMath.Lib
 			segment.Value = 0; //Reset to zero
 
 			TrySubtract(segment.Left, diff);
+		}
+
+		public static BigInteger ConvertToNumber(Guid guid)
+		{
+			var s = new GuidSegments(guid);
+
+			var base10Number =
+				s.A.Value * M.A +
+				s.B.Value * M.B +
+				s.C.Value * M.C +
+				s.D.Value * M.D +
+				s.E.Value * M.E;
+
+			return base10Number;
 		}
 
 		private string GetHexGuidString(params Segment[] segments)
