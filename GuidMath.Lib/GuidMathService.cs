@@ -1,4 +1,5 @@
-﻿using C = GuidMath.Lib.Constants;
+﻿using System.Numerics;
+using C = GuidMath.Lib.Constants;
 
 namespace GuidMath.Lib
 {
@@ -47,7 +48,7 @@ namespace GuidMath.Lib
 
 		private string FormatAsGuidString<T>(IEnumerable<T> segments) => string.Join('-', segments);
 
-		public Guid Add(long number)
+		public Guid Add(BigInteger number)
 		{
 			//Check if it was addition or subtraction
 			if (number >= 0)
@@ -69,7 +70,7 @@ namespace GuidMath.Lib
 			throw new Exception($"Guid string {str} could not be parsed. It's not a valid Guid. Math bug.");
 		}
 
-		private void TryAdd(Segment segment, long number)
+		private void TryAdd(Segment segment, BigInteger number)
 		{
 			if (segment == null) throw new InvalidAdditionException();
 
@@ -95,7 +96,7 @@ namespace GuidMath.Lib
 			TryAdd(segment.Left, remainder);
 		}
 
-		private void TrySubtract(Segment segment, long number)
+		private void TrySubtract(Segment segment, BigInteger number)
 		{
 			if (segment == null) throw new InvalidSubtractionException();
 
@@ -119,9 +120,20 @@ namespace GuidMath.Lib
 
 		private string GetHexGuidString(params Segment[] segments)
 		{
-			var arr = segments
-				.Select(s => string.Format("{0:X" + s.HexLength + "}", s.Value))
-				.ToArray();
+			var arr = new string[segments.Length];
+
+			for (int i = 0; i < segments.Length; i++)
+			{
+				var s = segments[i];
+
+				var f = string.Format("{0:X" + s.HexLength + "}", s.Value);
+
+				//Remove first zero, side effect of working with BigInteger
+				//https://stackoverflow.com/questions/6248086/why-does-biginteger-tostringx-prepend-a-0-for-values-between-signed-maxvalue
+				if (f.Length > s.HexLength && s.Value.Sign > 0) f = f.Remove(0, 1);
+
+				arr[i] = f;
+			}
 
 			var str = FormatAsGuidString(arr);
 
@@ -143,7 +155,7 @@ namespace GuidMath.Lib
 
 			public long Max { get; set; }
 
-			public long Value { get; set; }
+			public BigInteger Value { get; set; }
 
 			public Segment Left { get; set; }
 		}
