@@ -26,6 +26,15 @@
                 public const long MaxD = 65535L;
                 public const long MaxE = 281474976710655L;
             }
+
+            public static class Width
+            {
+                public const int A = 8;
+                public const int B = 4;
+                public const int C = 4;
+                public const int D = 4;
+                public const int E = 12;
+            }
         }        
     }
 }

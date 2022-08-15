@@ -1,66 +1,46 @@
 ﻿using System.Numerics;
-using C = GuidMath.Lib.Constants;
 
 namespace GuidMath.Lib
 {
-	public class GuidMathService
+	public partial class GuidMathService
 	{
-		private readonly string _guidString;
-		private readonly long[] _longSegments;
-		private Segment _a;
-		private Segment _b;
-		private Segment _c;
-		private Segment _d;
-		private Segment _e;
-
-		/// <summary>Decimal (base10) representation of a Guid.</summary>
-		public string GuidDecimalString { get; private set; }
-		
-		/// <summary>Supplied Guid.</summary>
-		public Guid GuidInput { get; private set; }
+		public readonly GuidSegments _segments;
 
 		public GuidMathService(Guid guid)
 		{
-			GuidInput = guid;
-
-			_guidString = guid.ToString("D"); //Just hypens
-
-			_longSegments = _guidString
-				.Split('-')
-				.Select(x => long.Parse(x, System.Globalization.NumberStyles.HexNumber))
-				.ToArray();
-
-			//Break it down for easy access
-			_a = new Segment(_longSegments[0], C.Segments.DecimalBase10.MaxA, 8);
-			_b = new Segment(_longSegments[1], C.Segments.DecimalBase10.MaxB, 4);
-			_c = new Segment(_longSegments[2], C.Segments.DecimalBase10.MaxC, 4);
-			_d = new Segment(_longSegments[3], C.Segments.DecimalBase10.MaxD, 4);
-			_e = new Segment(_longSegments[4], C.Segments.DecimalBase10.MaxE, 12);
-
-			//Setup the relationships between the segments
-			_b.Left = _a;
-			_c.Left = _b;
-			_d.Left = _c;
-			_e.Left = _d;
-
-			GuidDecimalString = FormatAsGuidString(_longSegments);
+			_segments = new GuidSegments(guid);
 		}
 
-		private string FormatAsGuidString<T>(IEnumerable<T> segments) => string.Join('-', segments);
+		public static string FormatAsGuidString<T>(IEnumerable<T> segments) => string.Join('-', segments);
+
+		public Guid Add(Guid guid)
+		{
+			return Add(1);
+		}
+
+		public Guid Subtract(Guid guid)
+		{
+			return Add(-1);
+		}
+
+		private BigInteger ConvertToNumber(Guid guid)
+		{
+			return 1;
+		}
 
 		public Guid Add(BigInteger number)
 		{
 			//Check if it was addition or subtraction
 			if (number >= 0)
 			{
-				TryAdd(_e, number);
+				TryAdd(_segments.E, number);
 			}
 			else
 			{
-				TrySubtract(_e, number);
+				TrySubtract(_segments.E, number);
 			}
 
-			var str = GetHexGuidString(_a, _b, _c, _d, _e);
+			var str = GetHexGuidString(_segments.GetSegments());
 
 			if (Guid.TryParse(str, out var guid)) return guid;
 
@@ -138,26 +118,6 @@ namespace GuidMath.Lib
 			var str = FormatAsGuidString(arr);
 
 			return str;
-		}
-
-		private class Segment
-		{
-			public Segment(long value, long max, int hexLength)
-			{
-				Value = value;
-
-				Max = max;
-
-				HexLength = hexLength;
-			}
-
-			public int HexLength { get; set; }
-
-			public long Max { get; set; }
-
-			public BigInteger Value { get; set; }
-
-			public Segment Left { get; set; }
 		}
 	}
 }
