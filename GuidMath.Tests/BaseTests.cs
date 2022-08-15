@@ -15,9 +15,58 @@ namespace GuidMath.Tests
         [TestCase(0, SomeGuidString)]
         [TestCase(-1, "67624A31-850B-4525-B4BF-778D20D47075")]
         [TestCase(-0x778D20D47077, "67624A31-850B-4525-B4BE-000000000000")]
-        public void Add_x(long number, string expectedGuid)
+        public void Add_number_to_guid(long number, string expectedGuid)
         {
             AreGuidsEqual(expectedGuid, number);
+        }
+
+        //Adding whole guids together probably has low practicallity other than fast incrementing
+        [TestCase(Constants.GuidHexStringMin, Constants.GuidHexStringMin, Constants.GuidHexStringMin)]
+        [TestCase(SomeGuidString, Constants.GuidHexStringMin, SomeGuidString)]
+        [TestCase(SomeGuidString, "00000000-0000-0000-0000-000000000001", "67624A31-850B-4525-B4BF-778D20D47077")]
+        //[TestCase(SomeGuidString, SomeGuidString)] //TODO: Need to find the expected
+        public void Add_guids_together(string guidA, string guidB, string expectedGuid)
+        {
+            var expected = new Guid(expectedGuid);
+
+            var svc = new GuidMathService(new Guid(guidA));
+
+            var actual = svc.Add(new Guid(guidB));
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase(Constants.GuidHexStringMin, Constants.GuidHexStringMin, Constants.GuidHexStringMin)]
+        [TestCase(SomeGuidString, "00000000-0000-0000-0000-000000000001", "67624A31-850B-4525-B4BF-778D20D47075")]
+        [TestCase(SomeGuidString, SomeGuidString, Constants.GuidHexStringMin)]
+        public void Subtract_guids(string guidA, string guidB, string expectedGuid)
+        {
+            var gA = new Guid(guidA);
+            var gB = new Guid(guidB);
+
+            var c = gA.CompareTo(gB);
+
+            Guid smaller;
+            Guid larger;
+
+            if (c >= 0)
+            {
+                smaller = gB;
+                larger = gA;
+            }
+            else
+            {
+                smaller = gA;
+                larger = gB;
+            }
+            
+            var expected = new Guid(expectedGuid);
+
+            var svc = new GuidMathService(larger);
+
+            var actual = svc.Subtract(smaller);
+
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
