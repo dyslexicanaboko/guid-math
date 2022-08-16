@@ -13,15 +13,12 @@ namespace GuidMath.Lib
 		public Segment D { get; private set; }
 		public Segment E { get; private set; }
 
-		/// <summary>Decimal (base10) representation of a Guid.</summary>
-		public string GuidDecimalString { get; private set; }
-
 		/// <summary>Supplied Guid.</summary>
-		public Guid GuidInput { get; private set; }
+		public Guid OriginalGuidInput { get; private set; }
 
 		public GuidSegments(Guid guid)
 		{
-			GuidInput = guid;
+			OriginalGuidInput = guid;
 
 			_guidString = guid.ToString("D"); //Just hypens
 
@@ -56,12 +53,20 @@ namespace GuidMath.Lib
 			C.Left = B;
 			D.Left = C;
 			E.Left = D;
-
-			var segments = GetSegments().Select(x => x.Value.ToString()).ToArray();
-
-			GuidDecimalString = GuidMathService.FormatAsGuidString(segments);
 		}
 
 		public Segment[] GetSegments() => new Segment[] { A, B, C, D, E };
+
+		/// <summary>Decimal (base10) representation in Guid D string format.</summary>
+		public string ToDecimalString()
+		{
+			var segments = GetSegments().Select(x => x.Value.ToString()).ToArray();
+
+			var guidDecimalString = GuidMathService.FormatAsGuidString(segments);
+
+			return guidDecimalString;
+		}
+
+		public BigInteger ToNumber() => GuidMathService.ConvertToNumber(this);
 	}
 }

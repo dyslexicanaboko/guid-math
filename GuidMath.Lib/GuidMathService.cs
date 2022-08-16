@@ -18,6 +18,15 @@ namespace GuidMath.Lib
 
 		public Guid Subtract(Guid guid) => Add(-ConvertToNumber(guid));
 
+		public BigInteger Difference(Guid guid)
+		{
+			var number = -ConvertToNumber(guid);
+
+			var result = TryBase10Subtract(number);
+
+			return result;
+		}
+
 		public Guid Add(BigInteger number)
 		{
 			//TODO: Handle base cases
@@ -29,7 +38,13 @@ namespace GuidMath.Lib
 			}
 			else
 			{
-				TrySubtract(_segments.E, number);
+				//TrySubtractBySegment(_segments.E, number);
+
+				var result = TryBase10Subtract(number);
+
+				var segments = ConvertToSegments(result);
+
+				ApplySegments(segments);
 			}
 
 			var str = GetHexGuidString(_segments.GetSegments());
@@ -68,31 +83,58 @@ namespace GuidMath.Lib
 			TryAdd(segment.Left, remainder);
 		}
 
-		private void TrySubtract(Segment segment, BigInteger number)
+		private void ApplySegments(GuidSegments segments)
 		{
-			if (segment == null) throw new InvalidSubtractionException();
-
-			var diff = segment.Value + number;
-
-			//If this Segment is not negative (or less than zero) then then it can be decremented.
-			if (diff >= 0)
-			{
-				segment.Value = diff;
-
-				return;
-			}
-
-			//If the segment is less than zero, then it is has to be reset to zero
-			//after reducing the number by the current value and we attempt to decrement the 
-			//next segment.
-			segment.Value = 0; //Reset to zero
-
-			TrySubtract(segment.Left, diff);
+			_segments.A.Value = segments.A.Value;
+			_segments.B.Value = segments.B.Value;
+			_segments.C.Value = segments.C.Value;
+			_segments.D.Value = segments.D.Value;
+			_segments.E.Value = segments.E.Value;
 		}
 
-		public static BigInteger ConvertToNumber(Guid guid)
+		//This alone is a base case that covers getting the Gap between two Guids
+		private BigInteger TryBase10Subtract(BigInteger input)
 		{
-			var s = new GuidSegments(guid);
+			var number = ConvertToNumber(_segments);
+
+			//Sign is already applied upon input
+			var result = number + input;
+
+			//Negative numbers cannot be supported because there is no such thing as a negative Guid
+			if (result.Sign < 0) throw new InvalidSubtractionException();
+
+			return result;
+		}
+
+		//This is no longer used, but I am going to keep it around just in case
+		//This also didn't work, but trying to make it work would have been inefficient
+		//private void TrySubtractBySegment(Segment segment, BigInteger number)
+		//{
+		//	if (segment == null) throw new InvalidSubtractionException();
+
+		//	var diff = segment.Value + number;
+
+		//	//If this Segment is not negative (or less than zero) then then it can be decremented.
+		//	if (diff >= 0)
+		//	{
+		//		segment.Value = diff;
+
+		//		return;
+		//	}
+
+		//	//If the segment is less than zero, then it is has to be reset to zero
+		//	//after reducing the number by the current value and we attempt to decrement the 
+		//	//next segment.
+		//	segment.Value = 0; //Reset to zero
+
+		//	TrySubtractBySegment(segment.Left, diff);
+		//}
+
+		public static BigInteger ConvertToNumber(Guid guid) => ConvertToNumber(new GuidSegments(guid));
+
+		public static BigInteger ConvertToNumber(GuidSegments segments)
+		{
+			var s = segments;
 
 			//Using expansion, the numbers can be merged without overlapping
 			var base10Number =
@@ -105,7 +147,7 @@ namespace GuidMath.Lib
 			return base10Number;
 		}
 
-		public static Guid ConvertToGuid(BigInteger number)
+		public static GuidSegments ConvertToSegments(BigInteger number)
 		{
 			//Using the same multipliers used in expansion, the numbers can be segmented without losing digits.
 			//The difference is that the previous segment has to be removed before getting the next segment.
@@ -116,20 +158,27 @@ namespace GuidMath.Lib
 			offset += a * M.A;
 
 			var b = GetSegment(number, M.B, offset);
-			
+
 			offset += b * M.B;
-			
+
 			var c = GetSegment(number, M.C, offset);
-			
+
 			offset += c * M.C;
-			
+
 			var d = GetSegment(number, M.D, offset);
-			
+
 			offset += d * M.D;
-			
+
 			var e = GetSegment(number, M.E, offset);
 
 			var segments = new GuidSegments(a, b, c, d, e);
+
+			return segments;
+		}
+
+		public static Guid ConvertToGuid(BigInteger number)
+		{
+			var segments = ConvertToSegments(number);
 
 			var strGuid = GetHexGuidString(segments.GetSegments());
 

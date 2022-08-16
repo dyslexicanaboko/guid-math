@@ -14,7 +14,7 @@ namespace GuidMath.Tests
         [TestCase(0x8872DF2B8F8A, "67624A31-850B-4525-B4C0-000000000000")]
         [TestCase(0, SomeGuidString)]
         [TestCase(-1, "67624A31-850B-4525-B4BF-778D20D47075")]
-        [TestCase(-0x778D20D47077, "67624A31-850B-4525-B4BE-000000000000")]
+        [TestCase(-0x778D20D47076, "67624A31-850B-4525-B4BF-000000000000")]
         public void Add_number_to_guid(long number, string expectedGuid)
         {
             AreGuidsEqual(expectedGuid, number);
@@ -69,6 +69,40 @@ namespace GuidMath.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [TestCase(Constants.GuidHexStringMin, Constants.GuidHexStringMin, "0")]
+        [TestCase(Constants.GuidHexStringMax, Constants.GuidHexStringMax, "0")]
+        [TestCase(SomeGuidString, "67624A31-850B-4525-B4BF-778D20D47000", "118")]
+        [TestCase(SomeGuidString, SomeGuidString, "0")]
+        public void Gap_between_guids(string guidA, string guidB, string expectedNumber)
+        {
+            var gA = new Guid(guidA);
+            var gB = new Guid(guidB);
+
+            var c = gA.CompareTo(gB);
+
+            Guid smaller;
+            Guid larger;
+
+            if (c >= 0)
+            {
+                smaller = gB;
+                larger = gA;
+            }
+            else
+            {
+                smaller = gA;
+                larger = gB;
+            }
+
+            var expected = BigInteger.Parse(expectedNumber);
+
+            var svc = new GuidMathService(larger);
+
+            var actual = svc.Difference(smaller);
+
+            Assert.AreEqual(expected, actual);
+        }
+
         [Test]
         public void Exception_when_result_is_too_large()
         {
@@ -81,7 +115,7 @@ namespace GuidMath.Tests
         public void Exception_when_result_is_less_than_zero()
         {
             Assert.Throws<InvalidSubtractionException>(() => {
-                new GuidMathService(SomeGuid).Add(-0x8872DF2B8F8A);
+                new GuidMathService(SomeGuid).Add(-BigInteger.Parse("4294967295655356553565535281474976710655"));
             });
         }
 
