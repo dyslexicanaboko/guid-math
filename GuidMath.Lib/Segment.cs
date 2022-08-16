@@ -4,7 +4,7 @@ namespace GuidMath.Lib
 {
 	public class Segment
 	{
-		public Segment(long value, long max, int hexLength)
+		public Segment(BigInteger value, long max, int hexLength)
 		{
 			Value = value;
 
