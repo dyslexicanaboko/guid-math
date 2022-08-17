@@ -138,7 +138,7 @@ namespace GuidMath.Tests
         {
             var expected = BigInteger.Parse(expectedNumber);
             
-            var actual = GuidMathService.ConvertToNumber(new Guid(guid));
+            var actual = GMath.ConvertToNumber(new Guid(guid));
 
             Assert.AreEqual(expected, actual);
         }
@@ -151,7 +151,7 @@ namespace GuidMath.Tests
         {
             var expected = new Guid(expectedGuid);
 
-            var actual = GuidMathService.ConvertToGuid(BigInteger.Parse(number));
+            var actual = GMath.ConvertToGuid(BigInteger.Parse(number));
 
             Assert.AreEqual(expected, actual);
         }

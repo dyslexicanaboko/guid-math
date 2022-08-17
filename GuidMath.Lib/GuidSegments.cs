@@ -62,11 +62,11 @@ namespace GuidMath.Lib
 		{
 			var segments = GetSegments().Select(x => x.Value.ToString()).ToArray();
 
-			var guidDecimalString = GuidMathService.FormatAsGuidString(segments);
+			var guidDecimalString = GMath.FormatAsGuidString(segments);
 
 			return guidDecimalString;
 		}
 
-		public BigInteger ToNumber() => GuidMathService.ConvertToNumber(this);
+		public BigInteger ToNumber() => GMath.ConvertToNumber(this);
 	}
 }

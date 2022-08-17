@@ -6,4 +6,12 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Graveyard.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Graveyard.cs" />
+  </ItemGroup>
+
 </Project>
