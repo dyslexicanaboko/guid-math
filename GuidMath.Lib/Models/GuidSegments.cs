@@ -5,24 +5,17 @@ namespace GuidMath.Lib.Models
 {
     public class GuidSegments
     {
-        private readonly string _guidString;
-
         public Segment A { get; private set; }
         public Segment B { get; private set; }
         public Segment C { get; private set; }
         public Segment D { get; private set; }
         public Segment E { get; private set; }
 
-        /// <summary>Supplied Guid.</summary>
-        public Guid OriginalGuidInput { get; private set; }
-
         public GuidSegments(Guid guid)
         {
-            OriginalGuidInput = guid;
+            var guidString = guid.ToString("D"); //Just hypens
 
-            _guidString = guid.ToString("D"); //Just hypens
-
-            var longSegments = _guidString
+            var longSegments = guidString
                 .Split('-')
                 .Select(x => long.Parse(x, System.Globalization.NumberStyles.HexNumber))
                 .ToArray();

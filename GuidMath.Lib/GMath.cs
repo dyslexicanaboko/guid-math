@@ -4,7 +4,7 @@ using M = GuidMath.Lib.Constants.Segments.Multiplier;
 
 namespace GuidMath.Lib
 {
-    public static class GMath
+	public static class GMath
 	{
 		public static string FormatAsGuidString<T>(IEnumerable<T> segments) => string.Join('-', segments);
 

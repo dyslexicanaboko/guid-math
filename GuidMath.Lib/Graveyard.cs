@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-//This is a parking lot for dead code. I don't want to throw it away just yet, but I also don't want to see it.
+﻿//This is a parking lot for dead code. I don't want to throw it away just yet, but I also don't want to see it.
 //This file is set to Build Action None.
 namespace GuidMath.Lib
 {
@@ -32,6 +26,34 @@ namespace GuidMath.Lib
             segment.Value = 0; //Reset to zero
 
             TrySubtractBySegment(segment.Left, diff);
+        }
+
+        //Since I found an alternative that works for subtraction, then addition can do the same thing.
+        //No need to painfully increment segments one at a time.
+        private void TryAdd(Segment segment, BigInteger number)
+        {
+            if (segment == null) throw new InvalidAdditionException();
+
+            var sum = segment.Value + number;
+
+            //If this Segment is not larger than max then it can be incremented.
+            if (segment.Max > sum)
+            {
+                segment.Value = sum;
+
+                return;
+            }
+
+            //If the segment is larger than or equal to max, then it is has to be reset to zero
+            //after reducing the number by the current value and we attempt to increment the 
+            //next segment.
+            var remainder = sum - segment.Max; //Calculate the remainder
+
+            //Console.WriteLine(remainder);
+
+            segment.Value = 0; //Reset to zero
+
+            TryAdd(segment.Left, remainder);
         }
     }
 }

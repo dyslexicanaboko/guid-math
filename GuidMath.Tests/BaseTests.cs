@@ -13,7 +13,7 @@ namespace GuidMath.Tests
         private readonly Guid SomeGuid = new Guid(SomeGuidString);
 
         [TestCase(1, "67624A31-850B-4525-B4BF-778D20D47077")]
-        [TestCase(0x8872DF2B8F8A, "67624A31-850B-4525-B4C0-000000000000")]
+        [TestCase(0x8872DF2B8F8A, "67624a31-850b-4525-b4bf-000000000000")]
         [TestCase(0, SomeGuidString)]
         [TestCase(-1, "67624A31-850B-4525-B4BF-778D20D47075")]
         [TestCase(-0x778D20D47076, "67624A31-850B-4525-B4BF-000000000000")]
@@ -109,7 +109,7 @@ namespace GuidMath.Tests
         public void Exception_when_result_is_too_large()
         {
             Assert.Throws<InvalidAdditionException>(() => {
-                new GuidMathService(SomeGuid).Add(0xFFFFFFFFFFFF);
+                new GuidMathService(SomeGuid).Add(Constants.GuidDecimalMax);
             });
         }
 
@@ -117,7 +117,7 @@ namespace GuidMath.Tests
         public void Exception_when_result_is_less_than_zero()
         {
             Assert.Throws<InvalidSubtractionException>(() => {
-                new GuidMathService(SomeGuid).Add(-BigInteger.Parse("4294967295655356553565535281474976710655"));
+                new GuidMathService(SomeGuid).Add(-Constants.GuidDecimalMax);
             });
         }
 
