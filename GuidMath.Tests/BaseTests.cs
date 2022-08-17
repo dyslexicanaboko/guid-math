@@ -1,4 +1,6 @@
 ﻿using GuidMath.Lib;
+using GuidMath.Lib.Exceptions;
+using GuidMath.Lib.Services;
 using NUnit.Framework;
 using System.Numerics;
 
