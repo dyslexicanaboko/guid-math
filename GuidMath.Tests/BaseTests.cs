@@ -105,10 +105,57 @@ namespace GuidMath.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [TestCase(Constants.GuidHexStringMin, Constants.GuidHexStringMin, Constants.GuidHexStringMin)]
+        [TestCase(SomeGuidString, Constants.GuidHexStringMin, Constants.GuidHexStringMin)]
+        [TestCase("00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000001")]
+        [TestCase("00000000-0000-0000-0000-000000000010", "00000000-0000-0000-0000-000000000010", "00000000-0000-0000-0000-000000000100")]
+        public void Multiply_guids(string guidA, string guidB, string expectedGuid)
+        {
+            var expected = new Guid(expectedGuid);
+
+            var svc = new GuidMathService(new Guid(guidA));
+
+            var actual = svc.Multiply(new Guid(guidB));
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase("00000000-0000-0000-0000-000000000002", 2)]
+        public void Multiply_guid_by_number(string guidA, int number)
+        {
+            var gA = new Guid(guidA);
+
+            var expected = new GuidMathService(gA);
+
+            //Sigma (N - 1) of A
+            for (int i = 0; i < number - 1; i++)
+            {
+                expected.Add(gA);
+            }
+
+            var svc = new GuidMathService(gA);
+
+            var actual = svc.Multiply(number);
+
+            Assert.AreEqual(expected.Value, actual);
+        }
+
+        [TestCase(SomeGuidString, SomeGuidString, "00000000-0000-0000-0000-000000000001")]
+        public void Divide_guids(string guidA, string guidB, string expectedGuid)
+        {
+            var expected = new Guid(expectedGuid);
+
+            var svc = new GuidMathService(new Guid(guidA));
+
+            var actual = svc.Divide(new Guid(guidB));
+
+            Assert.AreEqual(expected, actual);
+        }
+
         [Test]
         public void Exception_when_result_is_too_large()
         {
-            Assert.Throws<InvalidAdditionException>(() => {
+            Assert.Throws<GuidOverflowException>(() => {
                 new GuidMathService(SomeGuid).Add(Constants.GuidDecimalMax);
             });
         }
@@ -118,6 +165,22 @@ namespace GuidMath.Tests
         {
             Assert.Throws<InvalidSubtractionException>(() => {
                 new GuidMathService(SomeGuid).Add(-Constants.GuidDecimalMax);
+            });
+        }
+
+        [Test]
+        public void Exception_when_denominator_is_zero()
+        {
+            Assert.Throws<DivideByZeroException>(() => {
+                new GuidMathService(SomeGuid).Divide(Guid.Empty);
+            });
+        }
+
+        [Test]
+        public void Exception_when_multiplication_argument_is_negative()
+        {
+            Assert.Throws<NegativeArgumentNotSupportedException>(() => {
+                new GuidMathService(SomeGuid).Multiply(-1);
             });
         }
 
