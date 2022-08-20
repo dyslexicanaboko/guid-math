@@ -1,4 +1,6 @@
 ﻿using GuidMath.Lib;
+using GuidMath.Lib.Exceptions;
+using GuidMath.Lib.Services;
 using NUnit.Framework;
 using System.Numerics;
 
@@ -11,7 +13,7 @@ namespace GuidMath.Tests
         private readonly Guid SomeGuid = new Guid(SomeGuidString);
 
         [TestCase(1, "67624A31-850B-4525-B4BF-778D20D47077")]
-        [TestCase(0x8872DF2B8F8A, "67624A31-850B-4525-B4C0-000000000000")]
+        [TestCase(0x8872DF2B8F8A, "67624a31-850b-4525-b4bf-000000000000")]
         [TestCase(0, SomeGuidString)]
         [TestCase(-1, "67624A31-850B-4525-B4BF-778D20D47075")]
         [TestCase(-0x778D20D47076, "67624A31-850B-4525-B4BF-000000000000")]
@@ -103,11 +105,58 @@ namespace GuidMath.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [TestCase(Constants.GuidHexStringMin, Constants.GuidHexStringMin, Constants.GuidHexStringMin)]
+        [TestCase(SomeGuidString, Constants.GuidHexStringMin, Constants.GuidHexStringMin)]
+        [TestCase("00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000001")]
+        [TestCase("00000000-0000-0000-0000-000000000010", "00000000-0000-0000-0000-000000000010", "00000000-0000-0000-0000-000000000100")]
+        public void Multiply_guids(string guidA, string guidB, string expectedGuid)
+        {
+            var expected = new Guid(expectedGuid);
+
+            var svc = new GuidMathService(new Guid(guidA));
+
+            var actual = svc.Multiply(new Guid(guidB));
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestCase("00000000-0000-0000-0000-000000000002", 2)]
+        public void Multiply_guid_by_number(string guidA, int number)
+        {
+            var gA = new Guid(guidA);
+
+            var expected = new GuidMathService(gA);
+
+            //Sigma (N - 1) of A
+            for (int i = 0; i < number - 1; i++)
+            {
+                expected.Add(gA);
+            }
+
+            var svc = new GuidMathService(gA);
+
+            var actual = svc.Multiply(number);
+
+            Assert.AreEqual(expected.Value, actual);
+        }
+
+        [TestCase(SomeGuidString, SomeGuidString, "00000000-0000-0000-0000-000000000001")]
+        public void Divide_guids(string guidA, string guidB, string expectedGuid)
+        {
+            var expected = new Guid(expectedGuid);
+
+            var svc = new GuidMathService(new Guid(guidA));
+
+            var actual = svc.Divide(new Guid(guidB));
+
+            Assert.AreEqual(expected, actual);
+        }
+
         [Test]
         public void Exception_when_result_is_too_large()
         {
-            Assert.Throws<InvalidAdditionException>(() => {
-                new GuidMathService(SomeGuid).Add(0xFFFFFFFFFFFF);
+            Assert.Throws<GuidOverflowException>(() => {
+                new GuidMathService(SomeGuid).Add(Constants.GuidDecimalMax);
             });
         }
 
@@ -115,7 +164,23 @@ namespace GuidMath.Tests
         public void Exception_when_result_is_less_than_zero()
         {
             Assert.Throws<InvalidSubtractionException>(() => {
-                new GuidMathService(SomeGuid).Add(-BigInteger.Parse("4294967295655356553565535281474976710655"));
+                new GuidMathService(SomeGuid).Add(-Constants.GuidDecimalMax);
+            });
+        }
+
+        [Test]
+        public void Exception_when_denominator_is_zero()
+        {
+            Assert.Throws<DivideByZeroException>(() => {
+                new GuidMathService(SomeGuid).Divide(Guid.Empty);
+            });
+        }
+
+        [Test]
+        public void Exception_when_multiplication_argument_is_negative()
+        {
+            Assert.Throws<NegativeArgumentNotSupportedException>(() => {
+                new GuidMathService(SomeGuid).Multiply(-1);
             });
         }
 
@@ -138,7 +203,7 @@ namespace GuidMath.Tests
         {
             var expected = BigInteger.Parse(expectedNumber);
             
-            var actual = GuidMathService.ConvertToNumber(new Guid(guid));
+            var actual = GMath.ConvertToNumber(new Guid(guid));
 
             Assert.AreEqual(expected, actual);
         }
@@ -151,7 +216,7 @@ namespace GuidMath.Tests
         {
             var expected = new Guid(expectedGuid);
 
-            var actual = GuidMathService.ConvertToGuid(BigInteger.Parse(number));
+            var actual = GMath.ConvertToGuid(BigInteger.Parse(number));
 
             Assert.AreEqual(expected, actual);
         }

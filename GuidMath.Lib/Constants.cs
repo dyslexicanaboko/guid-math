@@ -7,6 +7,8 @@ namespace GuidMath.Lib
         //                                      A        B    C    D    E                A          B     C     D     E
         public const string GuidHexStringMin = "00000000-0000-0000-0000-000000000000"; //0         -0    -0    -0    -0
         public const string GuidHexStringMax = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"; //4294967295-65535-65535-65535-281474976710655
+        public static readonly Guid GuidMax = new Guid(GuidHexStringMax);
+        public static readonly BigInteger GuidDecimalMax = BigInteger.Parse("4294967295655356553565535281474976710655");
 
         public static class Segments
         {

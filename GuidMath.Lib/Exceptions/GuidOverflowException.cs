@@ -1,12 +1,12 @@
-﻿namespace GuidMath.Lib
+﻿namespace GuidMath.Lib.Exceptions
 {
-    public class InvalidAdditionException
+    public class GuidOverflowException
         : Exception
     {
-        public InvalidAdditionException()
+        public GuidOverflowException()
             : base("Resultant Guid is too large and will overflow 2^128.")
         {
-            
+
         }
     }
 }
