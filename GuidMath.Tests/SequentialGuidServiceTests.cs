@@ -33,13 +33,13 @@ namespace GuidMath.Tests
         }
 
         //Virtual machine - 32GB RAM on AMD Ryzen 7
-        [TestCase(1)]        //000ms
-        [TestCase(100)]      //004ms
-        [TestCase(1000)]     //027ms
-        [TestCase(10000)]    //140ms
-        [TestCase(100000)]   //372ms
-        [TestCase(1000000)]  //003.3ms
-        [TestCase(10000000)] //033.4ms
+        [TestCase(1)]        //   000 ms -    1
+        [TestCase(100)]      //   004 ms -  100
+        [TestCase(1000)]     //   027 ms -   1K
+        [TestCase(10000)]    //   140 ms -  10K
+        [TestCase(100000)]   //   372 ms - 100K
+        [TestCase(1000000)]  // 3,276 ms -   1M
+        [TestCase(10000000)] //33,432 ms -  10M
         public void Sequential_guid_speed_test(long generate)
         {
             var svcSequential = new SequentialGuidService();
