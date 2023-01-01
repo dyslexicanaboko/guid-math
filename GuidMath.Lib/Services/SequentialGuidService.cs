@@ -4,23 +4,33 @@
     public class SequentialGuidService
     {
         private readonly GuidMathService _math;
-        private readonly Guid _seedGuid;
-        private int _i;
+
+        public Guid SeedGuid { get; private set; }
+
+        public long GenerationCount { get; private set; }
 
         public SequentialGuidService()
         {
-            _seedGuid = Guid.NewGuid();
+            SeedGuid = Guid.NewGuid();
 
-            _math = new GuidMathService(_seedGuid);
-
-            _i = 0;
+            _math = new GuidMathService(SeedGuid);
         }
 
         public Guid CreateSequentialGuid()
         {
-            var nextGuid = _math.Add(_i);
+            //Base case - return the SeedGuid first - index 0
+            if (GenerationCount == 0)
+            {
+                GenerationCount = 1;
 
-            _i++;
+                return SeedGuid;
+            }
+
+            //Keep incrementing the in-memory Guid by one
+            var nextGuid = _math.Add(1);
+
+            //Keep track of the times it has been incremented
+            GenerationCount++;
 
             return nextGuid;
         }
